@@ -2,6 +2,9 @@
 
 Welcome to the 8-bit Spelling Game! Test your spelling skills in this fun, retro-styled educational game.
 
+![Spelling Game Screenshot](docs/images/spellinggame.gif)
+*Screenshot: Spelling Game in action!*
+
 ## How to Play
 
 1. Click "START" to begin the game
@@ -18,9 +21,6 @@ Welcome to the 8-bit Spelling Game! Test your spelling skills in this fun, retro
    - See celebratory confetti
    - Add points to your score
 7. Keep playing to improve your score!
-
-![Spelling Game Screenshot](docs/images/spellinggame.gif)
-*Screenshot: Spelling Game in action!*
 
 ## Requirements
 - Node.js
