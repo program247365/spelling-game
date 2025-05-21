@@ -1,0 +1,212 @@
+@font-face {
+    font-family: 'PixelFont';
+    src: url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+}
+
+.font-pixel {
+    font-family: 'PixelFont', monospace;
+}
+
+.pixel-text {
+    text-shadow: 3px 3px 0 rgba(0, 0, 0, 0.2);
+    letter-spacing: 1px;
+}
+
+.pixel-btn {
+    image-rendering: pixelated;
+    border: 4px solid #000;
+    box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.3);
+}
+
+.index-card {
+    background-image: url('assets/images/index-card.png');
+    background-size: cover;
+    border: 4px solid #000;
+}
+
+.letter-slot {
+    width: 40px;
+    height: 50px;
+    border: 2px solid #000;
+    border-radius: 4px;
+    margin: 0 4px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 24px;
+    font-weight: bold;
+    background-color: white;
+    transition: all 0.2s;
+    text-transform: uppercase;
+}
+
+.letter-typed {
+    background-color: #f0f0f0;
+    transform: scale(1.05);
+}
+
+.letter-correct {
+    color: #22c55e;
+    border-color: #22c55e;
+    transform: scale(1.1);
+}
+
+.letter-incorrect {
+    color: #ef4444;
+    border-color: #ef4444;
+    animation: shake 0.5s;
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    50% { transform: translateX(5px); }
+    75% { transform: translateX(-5px); }
+}
+
+.falling-word {
+    position: absolute;
+    color: rgba(0, 0, 100, 0.3);
+    font-size: 20px;
+    animation: fall linear;
+}
+
+@keyframes fall {
+    0% { transform: translateY(-100px); }
+    100% { transform: translateY(100vh); }
+}
+
+.dolphin-appear {
+    transform: translateY(0) !important;
+}
+
+.dolphin-shake {
+    animation: dolphin-shake 0.5s;
+}
+
+.dolphin-flip {
+    animation: dolphin-flip 1s;
+}
+
+@keyframes dolphin-shake {
+    0%, 100% { transform: translateY(0) rotate(0); }
+    25% { transform: translateY(-10px) rotate(-5deg); }
+    50% { transform: translateY(0) rotate(5deg); }
+    75% { transform: translateY(-10px) rotate(-5deg); }
+}
+
+@keyframes dolphin-flip {
+    0% { transform: translateY(0) rotate(0); }
+    50% { transform: translateY(-100px) rotate(180deg); }
+    100% { transform: translateY(0) rotate(360deg); }
+}
+
+.confetti {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    background-color: #f00;
+    opacity: 0.8;
+    animation: confetti-fall linear;
+    pointer-events: none;
+    z-index: 1000;
+}
+
+@keyframes confetti-fall {
+    0% {
+        transform: translateY(-10px) rotate(0deg);
+        opacity: 1;
+    }
+    100% {
+        transform: translateY(100vh) rotate(360deg);
+        opacity: 0;
+    }
+}
+
+#confetti-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 1000;
+}
+
+.audio-indicator {
+    display: inline-block;
+    font-size: 1.5rem;
+    vertical-align: middle;
+    animation: audio-pulse 1s infinite;
+}
+
+.audio-indicator.hidden {
+    display: none;
+}
+
+@keyframes audio-pulse {
+    0% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(1.2); }
+    100% { opacity: 1; transform: scale(1); }
+}
+
+.browser-warning {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    background: rgba(255,255,255,0.95);
+    color: #b91c1c;
+    border: 2px solid #b91c1c;
+    border-radius: 8px;
+    padding: 12px 20px;
+    font-size: 1rem;
+    font-family: 'PixelFont', monospace;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    z-index: 2000;
+    transition: opacity 0.3s;
+}
+
+.browser-warning.hidden {
+    display: none;
+}
+
+.wrong-letter-message {
+    text-align: center;
+    color: #ef4444;
+    font-size: 1.25rem;
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+    transition: opacity 0.3s;
+    opacity: 1;
+    min-height: 2em;
+}
+
+.wrong-letter-message.hidden {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.completed-words-list {
+    margin: 0.5em 0 1em 0;
+    text-align: center;
+    font-size: 1.1rem;
+    color: #2563eb;
+    min-height: 1.5em;
+    font-family: 'PixelFont', monospace;
+}
+
+.completed-words-list ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.completed-words-list li {
+    display: inline-block;
+    margin: 0 0.5em;
+    padding: 0.2em 0.6em;
+    background: #e0e7ff;
+    border-radius: 6px;
+    font-weight: bold;
+    letter-spacing: 1px;
+}

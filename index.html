@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>8-Bit Spelling Game</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body class="bg-blue-100 font-pixel overflow-hidden">
+    <!-- Start Screen -->
+    <div id="start-screen" class="fixed inset-0 flex flex-col items-center justify-center z-50 bg-blue-100">
+        <div class="relative">
+            <h1 class="text-6xl text-center mb-10 text-blue-800 animate-pulse pixel-text">Spelling Game</h1>
+            <div class="falling-words-container absolute inset-0 -z-10 overflow-hidden"></div>
+        </div>
+        <button id="play-button" class="bg-green-500 hover:bg-green-600 text-white font-bold py-4 px-8 rounded-lg text-2xl shadow-lg transform transition hover:scale-105 pixel-btn">
+           START 
+        </button>
+    </div>
+
+    <!-- Game Screen -->
+    <div id="game-screen" class="hidden min-h-screen flex flex-col items-center justify-center p-4">
+        <div class="score-container fixed top-4 right-4 bg-yellow-200 p-3 rounded-lg shadow-md">
+            <p class="text-xl font-bold">Score: <span id="score">0</span></p>
+        </div>
+        
+        <div class="index-card bg-white rounded-lg shadow-xl p-6 w-full max-w-2xl mx-auto mb-8 relative">
+            <div class="flex justify-center mb-6">
+                <button id="speak-button" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg shadow">
+                    🔊 Hear Word
+                </button>
+                <span id="audio-indicator" class="audio-indicator hidden ml-2">🔊</span>
+            </div>
+            
+            <div id="word-container" class="flex justify-center space-x-2 mb-8">
+                <!-- Letter slots will be generated here -->
+            </div>
+            <div id="wrong-letter-message" class="wrong-letter-message hidden">Wrong Letter</div>
+            <div id="completed-words-list" class="completed-words-list"></div>
+            <div id="result-message" class="text-center text-2xl font-bold mb-4 h-8"></div>
+        </div>
+        
+        <div id="dolphin-container" class="fixed bottom-0 left-1/2 transform -translate-x-1/2 transition-all duration-300 translate-y-full">
+            <img id="dolphin" src="assets/images/dolphin.png" alt="Dolphin" class="w-32 h-32">
+        </div>
+        
+        <div id="confetti-container" class="fixed inset-0 pointer-events-none hidden">
+            <!-- Confetti elements will be added here -->
+        </div>
+    </div>
+
+    <!-- SQLite initialization (using sql.js) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.6.2/sql-wasm.js"></script>
+    <script src="dist/elevenlabs-key.js"></script>
+    
+    <!-- Game scripts -->
+    <script type="module" src="dist/database.js"></script>
+    <script type="module" src="dist/audio.js"></script>
+    <script type="module" src="dist/game.js"></script>
+    <div id="browser-warning" class="browser-warning hidden">For best results, please use Google Chrome.</div>
+</body>
+</html>

@@ -1,0 +1,20 @@
+{
+  "name": "spelling-game",
+  "version": "1.0.0",
+  "main": "dist/audio.js",
+  "type": "module",
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc -w",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "devDependencies": {
+    "@elevenlabs/elevenlabs-js": "^1.0.0",
+    "@types/node": "^20.11.24",
+    "typescript": "^5.3.3"
+  }
+}
