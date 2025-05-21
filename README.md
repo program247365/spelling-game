@@ -19,7 +19,7 @@ Welcome to the 8-bit Spelling Game! Test your spelling skills in this fun, retro
    - Add points to your score
 7. Keep playing to improve your score!
 
-![Spelling Game Screenshot](docs/images/screenshot.png)
+![Spelling Game Screenshot](docs/images/spellinggame.gif)
 *Screenshot: Spelling Game in action!*
 
 ## Requirements
