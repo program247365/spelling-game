@@ -44,6 +44,7 @@ function hideWrongLetterMessage() {
 // Initialize the game
 function initGame() {
     console.log('DOMContentLoaded: Initializing game...');
+    congratsOverlay = document.getElementById('congrats-overlay');
     if (!playButton) {
         console.error('Play button not found!');
     } else {
@@ -193,6 +194,22 @@ function handleCorrectWord() {
     
     // Move dolphin up
     dolphinContainer.classList.remove('translate-y-full');
+    
+    // If that was the last word, play final message and show congrats overlay
+    if (sessionWords.length === 0) {
+        // Clear letter slots
+        wordContainer.innerHTML = '';
+        // Hide result message
+        resultMessage.textContent = '';
+        // Hide dolphin
+        dolphinContainer.classList.add('translate-y-full');
+        // Play final congratulatory message, then show overlay
+        setTimeout(async () => {
+            await AudioManager.speakFeedback("You spelled all your spelling words correctly! You're a star!");
+            showCongratsOverlay();
+        }, 1200); // Give a short delay for the last confetti and sound
+        return;
+    }
     
     // Wait before loading next word
     setTimeout(() => {
