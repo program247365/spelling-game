@@ -1,4 +1,5 @@
 import AudioManager from './audio.js';
+import LocalStorageManager, { GameState } from './localstorage.js';
 
 // Game state
 let currentWord = '';
@@ -10,6 +11,7 @@ let allWords: string[] = [];
 let sessionWords: string[] = [];
 let congratsOverlay: HTMLElement | null = null;
 let congratsConfettiInterval: number | null = null;
+let currentWordIndex = 0;
 
 // DOM Elements
 const startScreen = document.getElementById('start-screen') as HTMLElement;
@@ -64,40 +66,66 @@ function initGame() {
     document.addEventListener('keydown', handleKeyPress);
 }
 
+// Update state in localStorage
+function saveGameState() {
+    LocalStorageManager.setState({
+        score,
+        completedWords,
+        sessionWords,
+        allWords,
+        currentWordIndex,
+    });
+}
+
+// Restore state from localStorage if present
+function restoreGameState() {
+    const state = LocalStorageManager.getState();
+    if (state) {
+        score = state.score;
+        completedWords = state.completedWords;
+        sessionWords = state.sessionWords;
+        allWords = state.allWords;
+        currentWordIndex = state.currentWordIndex ?? 0;
+        updateScore();
+        updateCompletedWordsList();
+        return true;
+    }
+    return false;
+}
+
 // Start the game
 async function startGame() {
     console.log('startGame called!');
     startScreen.classList.add('hidden');
     gameScreen.classList.remove('hidden');
-    score = 0;
-    updateScore();
-    completedWords = [];
-    updateCompletedWordsList();
-    // Fetch all words for the session from all categories
-    const categories = await window.DatabaseManager.getCategories();
-    allWords = [];
-    for (const category of categories) {
-        const categoryWords = await window.DatabaseManager.getWordsByCategory(category);
-        allWords.push(...categoryWords);
+    if (!restoreGameState()) {
+        score = 0;
+        updateScore();
+        completedWords = [];
+        updateCompletedWordsList();
+        const categories = await window.DatabaseManager.getCategories();
+        allWords = [];
+        for (const category of categories) {
+            const categoryWords = await window.DatabaseManager.getWordsByCategory(category);
+            allWords.push(...categoryWords);
+        }
+        sessionWords = shuffleArray([...allWords]);
+        currentWordIndex = 0;
     }
-    sessionWords = shuffleArray([...allWords]);
+    saveGameState();
     loadNewWord();
 }
 
 // Load a new word
 async function loadNewWord() {
-    if (sessionWords.length === 0) {
+    if (currentWordIndex >= sessionWords.length) {
         showCongratsOverlay();
         return;
     }
-    const word = sessionWords.pop();
-    if (!word) {
-        showCongratsOverlay();
-        return;
-    }
-    currentWord = word;
+    currentWord = sessionWords[currentWordIndex];
     setupLetterSlots();
     AudioManager.playWord(currentWord);
+    saveGameState();
 }
 
 // Setup letter slots for the current word
@@ -187,6 +215,7 @@ function handleCorrectWord() {
     // Add completed word to the list
     completedWords.push(currentWord);
     updateCompletedWordsList();
+    saveGameState();
     
     // Play correct sound and show confetti
     AudioManager.speakFeedback('Correct!');
@@ -196,7 +225,7 @@ function handleCorrectWord() {
     dolphinContainer.classList.remove('translate-y-full');
     
     // If that was the last word, play final message and show congrats overlay
-    if (sessionWords.length === 0) {
+    if (currentWordIndex + 1 >= sessionWords.length) {
         // Clear letter slots
         wordContainer.innerHTML = '';
         // Hide result message
@@ -215,6 +244,7 @@ function handleCorrectWord() {
     setTimeout(() => {
         resultMessage.textContent = '';
         dolphinContainer.classList.add('translate-y-full');
+        currentWordIndex++;
         loadNewWord();
     }, 2000);
 }
@@ -232,6 +262,7 @@ function handleWrongWord() {
         slot.classList.add('bg-gray-200');
     });
     currentLetterIndex = 0;
+    saveGameState();
 }
 
 // Update score display
@@ -323,19 +354,35 @@ function hideCongratsOverlay() {
 
 function resetGameFromCongrats() {
     hideCongratsOverlay();
+    LocalStorageManager.clearState();
     startGame();
 }
 
 // Initialize the game when the DOM is loaded
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
     initGame();
     updateCompletedWordsList();
     // Browser warning for non-Chrome browsers
     const warning = document.getElementById('browser-warning');
     const ua = window.navigator.userAgent;
-    // Chrome UA includes 'Chrome' and not 'Edg' or 'OPR' (Edge/Opera)
     const isChrome = /Chrome\//.test(ua) && !/Edg\//.test(ua) && !/OPR\//.test(ua);
     if (!isChrome && warning) {
         warning.classList.remove('hidden');
+    }
+
+    // If there is a saved game, resume it immediately
+    if (LocalStorageManager.getState()) {
+        startScreen.classList.add('hidden');
+        gameScreen.classList.remove('hidden');
+        restoreGameState();
+        // If a word is in progress, show it
+        if (currentWordIndex < sessionWords.length) {
+            currentWord = sessionWords[currentWordIndex];
+            setupLetterSlots();
+            AudioManager.playWord(currentWord);
+            saveGameState();
+        } else {
+            showCongratsOverlay();
+        }
     }
 }); 
