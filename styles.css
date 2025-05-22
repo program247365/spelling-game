@@ -187,7 +187,7 @@
 }
 
 .completed-words-list {
-    margin: 0.5em 0 1em 0;
+    margin: 1em 0;
     text-align: center;
     font-size: 1.1rem;
     color: #2563eb;
@@ -199,14 +199,25 @@
     list-style: none;
     padding: 0;
     margin: 0;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 1em;
 }
 
 .completed-words-list li {
     display: inline-block;
-    margin: 0 0.5em;
-    padding: 0.2em 0.6em;
+    margin: 0.5em;
+    padding: 0.4em 0.8em;
     background: #e0e7ff;
     border-radius: 6px;
     font-weight: bold;
     letter-spacing: 1px;
+    box-shadow: 2px 2px 0 rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s ease;
+}
+
+.completed-words-list li:hover {
+    transform: translateY(-2px);
+    background: #d1deff;
 }
