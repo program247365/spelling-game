@@ -6,6 +6,10 @@ let letterSlots: HTMLElement[] = [];
 let currentLetterIndex = 0;
 let score = 0;
 let completedWords: string[] = [];
+let allWords: string[] = [];
+let sessionWords: string[] = [];
+let congratsOverlay: HTMLElement | null = null;
+let congratsConfettiInterval: number | null = null;
 
 // DOM Elements
 const startScreen = document.getElementById('start-screen') as HTMLElement;
@@ -60,29 +64,39 @@ function initGame() {
 }
 
 // Start the game
-function startGame() {
+async function startGame() {
     console.log('startGame called!');
     startScreen.classList.add('hidden');
     gameScreen.classList.remove('hidden');
     score = 0;
     updateScore();
+    completedWords = [];
+    updateCompletedWordsList();
+    // Fetch all words for the session from all categories
+    const categories = await window.DatabaseManager.getCategories();
+    allWords = [];
+    for (const category of categories) {
+        const categoryWords = await window.DatabaseManager.getWordsByCategory(category);
+        allWords.push(...categoryWords);
+    }
+    sessionWords = shuffleArray([...allWords]);
     loadNewWord();
 }
 
 // Load a new word
 async function loadNewWord() {
-    try {
-        const word = await window.DatabaseManager.getRandomWord();
-        if (!word) {
-            throw new Error('No words available');
-        }
-        currentWord = word;
-        setupLetterSlots();
-        AudioManager.playWord(currentWord);
-    } catch (error) {
-        console.error('Error loading word:', error);
-        resultMessage.textContent = 'Error loading word. Please try again.';
+    if (sessionWords.length === 0) {
+        showCongratsOverlay();
+        return;
     }
+    const word = sessionWords.pop();
+    if (!word) {
+        showCongratsOverlay();
+        return;
+    }
+    currentWord = word;
+    setupLetterSlots();
+    AudioManager.playWord(currentWord);
 }
 
 // Setup letter slots for the current word
@@ -209,32 +223,20 @@ function updateScore() {
 }
 
 // Create confetti animation
-function createConfetti() {
+function createConfetti(continuous = false) {
     confettiContainer.classList.remove('hidden');
-    confettiContainer.innerHTML = '';
-    
+    // Only clear if not continuous
+    if (!continuous) confettiContainer.innerHTML = '';
     const colors = ['#FFD700', '#FF69B4', '#00BFFF', '#98FB98', '#FFA07A'];
-    
     for (let i = 0; i < 50; i++) {
         const confetti = document.createElement('div');
         confetti.className = 'confetti';
-        
-        // Random position
         const startX = Math.random() * window.innerWidth;
         const startY = -20;
-        
-        // Random color
         const color = colors[Math.floor(Math.random() * colors.length)];
-        
-        // Random size
         const size = Math.random() * 10 + 5;
-        
-        // Random shape
         const isCircle = Math.random() > 0.5;
-        
-        // Random animation duration
         const duration = Math.random() * 3 + 2;
-        
         confetti.style.cssText = `
             left: ${startX}px;
             top: ${startY}px;
@@ -244,13 +246,10 @@ function createConfetti() {
             border-radius: ${isCircle ? '50%' : '0'};
             animation-duration: ${duration}s;
         `;
-        
         confettiContainer.appendChild(confetti);
-        
-        // Remove confetti after animation
         confetti.addEventListener('animationend', () => {
             confetti.remove();
-            if (confettiContainer.children.length === 0) {
+            if (!continuous && confettiContainer.children.length === 0) {
                 confettiContainer.classList.add('hidden');
             }
         });
@@ -264,6 +263,50 @@ function updateCompletedWordsList() {
         return;
     }
     completedWordsList.innerHTML = '<ul>' + completedWords.map(word => `<li>${word}</li>`).join('') + '</ul>';
+}
+
+function shuffleArray<T>(array: T[]): T[] {
+    for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+    }
+    return array;
+}
+
+function showCongratsOverlay() {
+    if (!congratsOverlay) return;
+    congratsOverlay.classList.remove('hidden');
+    // Fill overlay with dolphins
+    const dolphinsHtml = Array.from({length: 20}).map(() => `<img src='assets/images/dolphin.png' class='w-32 h-32 m-2 inline-block' style='image-rendering: pixelated;'>`).join('');
+    congratsOverlay.innerHTML = `
+        <div class='flex flex-col items-center justify-center h-full'>
+            <h1 class='text-7xl font-bold text-pink-600 mb-8 pixel-text drop-shadow-lg'>CONGRATS!!!</h1>
+            <div class='flex flex-wrap justify-center'>${dolphinsHtml}</div>
+            <p class='mt-8 text-2xl text-blue-700 font-bold'>You spelled all the words!</p>
+            <p class='mt-4 text-lg text-gray-600'>(Click anywhere to play again)</p>
+        </div>
+    `;
+    // Start continuous confetti
+    if (congratsConfettiInterval) clearInterval(congratsConfettiInterval);
+    congratsConfettiInterval = window.setInterval(() => {
+        createConfetti(true);
+    }, 500);
+    congratsOverlay.addEventListener('click', resetGameFromCongrats, { once: true });
+}
+
+function hideCongratsOverlay() {
+    if (!congratsOverlay) return;
+    congratsOverlay.classList.add('hidden');
+    congratsOverlay.innerHTML = '';
+    if (congratsConfettiInterval) {
+        clearInterval(congratsConfettiInterval);
+        congratsConfettiInterval = null;
+    }
+}
+
+function resetGameFromCongrats() {
+    hideCongratsOverlay();
+    startGame();
 }
 
 // Initialize the game when the DOM is loaded
