@@ -362,13 +362,6 @@ function resetGameFromCongrats() {
 document.addEventListener('DOMContentLoaded', async () => {
     initGame();
     updateCompletedWordsList();
-    // Browser warning for non-Chrome browsers
-    const warning = document.getElementById('browser-warning');
-    const ua = window.navigator.userAgent;
-    const isChrome = /Chrome\//.test(ua) && !/Edg\//.test(ua) && !/OPR\//.test(ua);
-    if (!isChrome && warning) {
-        warning.classList.remove('hidden');
-    }
 
     // If there is a saved game, resume it immediately
     if (LocalStorageManager.getState()) {
