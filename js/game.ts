@@ -331,7 +331,7 @@ function showCongratsOverlay() {
             <h1 class='text-7xl font-bold text-pink-600 mb-8 pixel-text drop-shadow-lg'>CONGRATS!!!</h1>
             <div class='flex flex-wrap justify-center'>${dolphinsHtml}</div>
             <p class='mt-8 text-2xl text-blue-700 font-bold'>You spelled all the words!</p>
-            <p class='mt-4 text-lg text-gray-600'>(Click anywhere to play again)</p>
+            <button id="play-again-btn" class="mt-8 px-8 py-4 bg-pink-500 hover:bg-pink-600 text-white text-2xl font-bold rounded shadow-lg transition">Play again?</button>
         </div>
     `;
     // Start continuous confetti
@@ -339,7 +339,11 @@ function showCongratsOverlay() {
     congratsConfettiInterval = window.setInterval(() => {
         createConfetti(true);
     }, 500);
-    congratsOverlay.addEventListener('click', resetGameFromCongrats, { once: true });
+    // Add event listener to the button
+    const playAgainBtn = document.getElementById('play-again-btn');
+    if (playAgainBtn) {
+        playAgainBtn.addEventListener('click', resetGameFromCongrats, { once: true });
+    }
 }
 
 function hideCongratsOverlay() {
@@ -358,10 +362,88 @@ function resetGameFromCongrats() {
     startGame();
 }
 
+// --- Floating Settings Button and Menu ---
+function createFloatingSettingsMenu() {
+    // Only create once
+    if (document.getElementById('floating-settings-btn')) return;
+
+    // Floating button
+    const btn = document.createElement('button');
+    btn.id = 'floating-settings-btn';
+    btn.innerHTML = '<svg width="32" height="32" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-1.14 1.952-1.14 2.252 0a1.724 1.724 0 002.573 1.01c.987-.57 2.18.623 1.61 1.61a1.724 1.724 0 001.01 2.573c1.14.3 1.14 1.952 0 2.252a1.724 1.724 0 00-1.01 2.573c.57.987-.623 2.18-1.61 1.61a1.724 1.724 0 00-2.573 1.01c-.3 1.14-1.952 1.14-2.252 0a1.724 1.724 0 00-2.573-1.01c-.987.57-2.18-.623-1.61-1.61a1.724 1.724 0 00-1.01-2.573c-1.14-.3-1.14-1.952 0-2.252a1.724 1.724 0 001.01-2.573c-.57-.987.623-2.18 1.61-1.61.987.57 2.18-.623 1.61-1.61z"/><circle cx="12" cy="12" r="3"/></svg>';
+    btn.style.position = 'fixed';
+    btn.style.bottom = '32px';
+    btn.style.right = '32px';
+    btn.style.zIndex = '10000';
+    btn.style.background = '#fff';
+    btn.style.border = 'none';
+    btn.style.borderRadius = '50%';
+    btn.style.boxShadow = '0 2px 8px rgba(0,0,0,0.15)';
+    btn.style.width = '56px';
+    btn.style.height = '56px';
+    btn.style.display = 'flex';
+    btn.style.alignItems = 'center';
+    btn.style.justifyContent = 'center';
+    btn.style.cursor = 'pointer';
+    btn.style.transition = 'background 0.2s';
+    btn.onmouseenter = () => btn.style.background = '#f3f4f6';
+    btn.onmouseleave = () => btn.style.background = '#fff';
+
+    // Menu
+    const menu = document.createElement('div');
+    menu.id = 'floating-settings-menu';
+    menu.style.position = 'fixed';
+    menu.style.bottom = '100px';
+    menu.style.right = '32px';
+    menu.style.zIndex = '10001';
+    menu.style.background = '#fff';
+    menu.style.borderRadius = '1rem';
+    menu.style.boxShadow = '0 2px 16px rgba(0,0,0,0.18)';
+    menu.style.padding = '24px 32px';
+    menu.style.display = 'none';
+    menu.style.flexDirection = 'column';
+    menu.style.alignItems = 'center';
+    menu.style.gap = '16px';
+
+    // Play again button
+    const playAgainBtn = document.createElement('button');
+    playAgainBtn.id = 'floating-play-again-btn';
+    playAgainBtn.textContent = 'Play again?';
+    playAgainBtn.style.background = '#ec4899';
+    playAgainBtn.style.color = '#fff';
+    playAgainBtn.style.fontSize = '1.5rem';
+    playAgainBtn.style.fontWeight = 'bold';
+    playAgainBtn.style.padding = '12px 32px';
+    playAgainBtn.style.border = 'none';
+    playAgainBtn.style.borderRadius = '0.5rem';
+    playAgainBtn.style.boxShadow = '0 2px 8px rgba(0,0,0,0.10)';
+    playAgainBtn.style.cursor = 'pointer';
+    playAgainBtn.style.transition = 'background 0.2s';
+    playAgainBtn.onmouseenter = () => playAgainBtn.style.background = '#be185d';
+    playAgainBtn.onmouseleave = () => playAgainBtn.style.background = '#ec4899';
+    playAgainBtn.onclick = resetGameFromCongrats;
+
+    menu.appendChild(playAgainBtn);
+    document.body.appendChild(btn);
+    document.body.appendChild(menu);
+
+    // Toggle menu
+    btn.onclick = () => {
+        menu.style.display = menu.style.display === 'none' ? 'flex' : 'none';
+    };
+    // Hide menu when clicking outside
+    document.addEventListener('mousedown', (e) => {
+        if (!menu.contains(e.target as Node) && !btn.contains(e.target as Node)) {
+            menu.style.display = 'none';
+        }
+    });
+}
+
 // Initialize the game when the DOM is loaded
 document.addEventListener('DOMContentLoaded', async () => {
     initGame();
     updateCompletedWordsList();
+    createFloatingSettingsMenu();
 
     // If there is a saved game, resume it immediately
     if (LocalStorageManager.getState()) {
