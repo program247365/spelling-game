@@ -27,6 +27,18 @@ const audioIndicator = document.getElementById('audio-indicator') as HTMLElement
 const wrongLetterMessage = document.getElementById('wrong-letter-message') as HTMLElement;
 const completedWordsList = document.getElementById('completed-words-list') as HTMLElement;
 
+// Add a category display element below the word container
+let categoryElement = document.getElementById('category-display') as HTMLElement;
+if (!categoryElement) {
+    categoryElement = document.createElement('div');
+    categoryElement.id = 'category-display';
+    categoryElement.style.textAlign = 'center';
+    categoryElement.style.fontSize = '1.25rem';
+    categoryElement.style.fontWeight = '500';
+    categoryElement.style.marginTop = '16px';
+    wordContainer.parentNode?.insertBefore(categoryElement, wordContainer.nextSibling);
+}
+
 // Show/hide audio indicator
 function showAudioIndicator() {
     if (audioIndicator) audioIndicator.classList.remove('hidden');
@@ -116,6 +128,23 @@ async function startGame() {
     loadNewWord();
 }
 
+// Helper to update the category display
+async function updateCategoryDisplay(word: string) {
+    if (!word) {
+        categoryElement.textContent = '';
+        return;
+    }
+    // Use a new public method to get the category
+    if (window.DatabaseManager.getCategoryForWord) {
+        const category = await window.DatabaseManager.getCategoryForWord(word);
+        let label = category || '';
+        categoryElement.textContent = label;
+    } else {
+        categoryElement.textContent = '';
+    }
+}
+
+// Update loadNewWord to also update the category display
 // Load a new word
 async function loadNewWord() {
     if (currentWordIndex >= sessionWords.length) {
@@ -126,6 +155,7 @@ async function loadNewWord() {
     setupLetterSlots();
     AudioManager.playWord(currentWord);
     saveGameState();
+    await updateCategoryDisplay(currentWord);
 }
 
 // Setup letter slots for the current word
@@ -456,6 +486,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             setupLetterSlots();
             AudioManager.playWord(currentWord);
             saveGameState();
+            await updateCategoryDisplay(currentWord);
         } else {
             showCongratsOverlay();
         }

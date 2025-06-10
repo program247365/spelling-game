@@ -201,6 +201,26 @@ class DatabaseManager {
             return [];
         }
     }
+
+    // Get the category for a given word
+    async getCategoryForWord(word: string): Promise<string | null> {
+        if (!this.initialized) {
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            return this.getCategoryForWord(word);
+        }
+        try {
+            const result = this.db.exec(
+                `SELECT category FROM words WHERE word = ?`, [word.toUpperCase()]
+            );
+            if (result.length > 0 && result[0].values.length > 0) {
+                return result[0].values[0][0];
+            }
+            return null;
+        } catch (error) {
+            console.error('Error getting category for word:', error);
+            return null;
+        }
+    }
 }
 
 // Create and export a singleton instance
@@ -213,4 +233,6 @@ declare global {
         DatabaseManager: DatabaseManager;
     }
 }
-window.DatabaseManager = databaseManager; 
+window.DatabaseManager = databaseManager;
+// Attach getCategoryForWord to the instance for global access
+window.DatabaseManager.getCategoryForWord = databaseManager.getCategoryForWord.bind(databaseManager); 
