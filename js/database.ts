@@ -58,26 +58,26 @@ class DatabaseManager {
     // Add initial words to the database
     private async addInitialWords() {
         const words: { word: string; category: string; difficulty?: number }[] = [
-            { word: 'chief', category: 'regular' },
-            { word: 'field', category: 'regular' },
-            { word: 'neighbor', category: 'regular' },
-            { word: 'weight', category: 'regular' },
-            { word: 'ceiling', category: 'regular' },
-            { word: 'carriage', category: 'regular' },
-            { word: 'airplane', category: 'regular' },
-            { word: 'trivia', category: 'regular' },
-            { word: 'claim', category: 'regular' },
-            { word: 'tail', category: 'regular' },
-            { word: 'goalie', category: 'regular' },
-            { word: 'nailed', category: 'regular' },
-            { word: 'waiting', category: 'regular' },
-            { word: 'said', category: 'regular' },
-            { word: 'niece', category: 'regular' },
-            { word: 'written', category: 'review' },
-            { word: 'island', category: 'review' },
-            { word: 'wrong', category: 'review' },
-            { word: 'millionaire', category: 'challenge' },
-            { word: 'believe', category: 'challenge' }
+            { word: 'spider', category: 'regular', difficulty: 1 },
+            { word: 'water', category: 'regular', difficulty: 1 },
+            { word: 'wanted', category: 'regular', difficulty: 1 },
+            { word: 'bottles', category: 'regular', difficulty: 1 },
+            { word: 'butter', category: 'regular', difficulty: 1 },
+            { word: 'middle', category: 'regular', difficulty: 1 },
+            { word: 'littlest', category: 'regular', difficulty: 1 },
+            { word: 'paddle', category: 'regular', difficulty: 1 },
+            { word: 'hurting', category: 'regular', difficulty: 1 },
+            { word: 'pudding', category: 'regular', difficulty: 1 },
+            { word: 'cattle', category: 'regular', difficulty: 1 },
+            { word: 'handle', category: 'regular', difficulty: 1 },
+            { word: 'letter', category: 'regular', difficulty: 1 },
+            { word: 'ladder', category: 'regular', difficulty: 1 },
+            { word: 'bitter', category: 'regular', difficulty: 1 },
+            { word: 'cardboard', category: 'review', difficulty: 1 },
+            { word: 'ladybug', category: 'review', difficulty: 1 },
+            { word: 'quicksand', category: 'review', difficulty: 1 },
+            { word: 'bandage', category: 'challenge', difficulty: 1 },
+            { word: 'tasted', category: 'challenge', difficulty: 1 }
         ];
 
         const stmt = this.db.prepare(`
